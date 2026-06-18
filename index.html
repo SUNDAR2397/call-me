@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>A tiny question for you 💌</title>
+<title>A tiny question for Munnu 💌</title>
 <style>
   :root {
     --pink: #ff5d8f;
@@ -92,8 +92,8 @@
     <!-- STEP 1 -->
     <section id="step1">
       <div class="emoji">📞</div>
-      <h1>Are you going to call me?</h1>
-      <p class="sub" id="s1sub">Choose wisely... (there's only one right answer 😌)</p>
+      <h1>Munnu, are you going to call me? 🥺</h1>
+      <p class="sub" id="s1sub">Choose wisely, Munnu... (there's only one right answer 😌)</p>
       <div class="row">
         <button class="btn yes" id="yesBtn">Yes 🥰</button>
         <button class="btn no" id="noBtn">No</button>
@@ -103,7 +103,7 @@
     <!-- STEP 2: pick a day -->
     <section id="step2" class="hidden">
       <div class="emoji">📅</div>
-      <h1>Yay! When can I hear your voice?</h1>
+      <h1>Yay! When can I hear your voice, Munnu?</h1>
       <p class="sub">Pick a day (next 4 days only — I can't wait longer 🙈)</p>
       <div class="grid" id="dayGrid"></div>
       <button class="back" data-go="1">← oops, wrong button</button>
@@ -151,15 +151,16 @@
   const yesBtn = document.getElementById("yesBtn");
   const s1sub = document.getElementById("s1sub");
   const noLines = [
-    "Nice try 😏",
-    "Catch me first!",
+    "Nice try, Munnu 😏",
+    "Catch me first, Munnu!",
     "Nope, not today",
     "Wrong answer 😤",
     "I'm too fast 💨",
-    "Are you sure? No.",
+    "Munnu, are you sure? No.",
     "Try the other one 👉",
     "lol no",
-    "Not happening 😋"
+    "Not happening 😋",
+    "Munnu pls 🥺👉👈"
   ];
   let yesScale = 1;
   function dodge(){
@@ -231,7 +232,7 @@
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
-        _subject: "📞 She's calling you! Booking confirmed 💖",
+        _subject: "📞 Munnu is calling you! Booking confirmed 💖",
         _template: "table",
         _captcha: "false",
         "She chose": chosenDay.label + " (" + chosenDay.dateStr + ")",
@@ -241,11 +242,11 @@
     }).catch(function(){ /* stay silent on her end no matter what */ });
 
     document.getElementById("doneMsg").innerHTML =
-      "Thanks for your time and patience 💕<br><br>" +
+      "Thanks for your time and patience, Munnu 💕<br><br>" +
       "Your call with <strong>Karun</strong> on <strong>" + chosenDay.label +
       " (" + chosenDay.dateStr + ")</strong> at <strong>" + chosenSlot +
       "</strong> has been sorted now. 📞✨<br><br>" +
-      "<em>He's already smiling, just so you know.</em>";
+      "<em>He's already smiling, just so you know. See you then, Munnu.</em>";
   }
   document.getElementById("restart").onclick = ()=>{ yesScale=1; yesBtn.style.transform=""; noBtn.style.position=""; noBtn.textContent="No"; show(1); };
 
