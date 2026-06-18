@@ -226,6 +226,20 @@
   // ---- STEP 4: confirmation ----
   function finish(){
     burst();
+    // ---- notify Karun by email (FormSubmit, no signup) ----
+    fetch("https://formsubmit.co/ajax/karunrp23@gmail.com", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({
+        _subject: "📞 She's calling you! Booking confirmed 💖",
+        _template: "table",
+        _captcha: "false",
+        "She chose": chosenDay.label + " (" + chosenDay.dateStr + ")",
+        "Time slot": chosenSlot,
+        "Booked at": new Date().toLocaleString()
+      })
+    }).catch(function(){ /* stay silent on her end no matter what */ });
+
     document.getElementById("doneMsg").innerHTML =
       "Thanks for your time and patience 💕<br><br>" +
       "Your call with <strong>Karun</strong> on <strong>" + chosenDay.label +
