@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>A tiny question for you 💌</title>
+<style>
+  :root {
+    --pink: #ff5d8f;
+    --pink-soft: #ffe0ea;
+    --purple: #7b2ff7;
+    --ink: #3a2b3f;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    background: linear-gradient(135deg, #ffd1e3 0%, #ffe9d6 50%, #e7d6ff 100%);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .card {
+    background: rgba(255,255,255,0.86);
+    backdrop-filter: blur(8px);
+    border-radius: 28px;
+    padding: 40px 30px;
+    width: min(92vw, 460px);
+    box-shadow: 0 20px 60px rgba(255, 93, 143, 0.35);
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  h1 { font-size: clamp(22px, 6vw, 30px); margin: 0 0 8px; line-height: 1.25; }
+  .sub { color: #8a6b78; font-size: 15px; margin: 0 0 26px; min-height: 22px; }
+  .btn {
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 14px 26px;
+    border-radius: 999px;
+    transition: transform .15s ease, box-shadow .15s ease;
+    font-family: inherit;
+  }
+  .btn:active { transform: scale(.96); }
+  .yes {
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: #fff;
+    box-shadow: 0 10px 24px rgba(123, 47, 247, .35);
+  }
+  .yes:hover { transform: translateY(-2px) scale(1.04); }
+  .no {
+    background: #fff;
+    color: var(--pink);
+    border: 2px solid var(--pink);
+    position: relative;
+  }
+  .row { display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
+  .pick {
+    background: #fff;
+    border: 2px solid var(--pink-soft);
+    color: var(--ink);
+    border-radius: 16px;
+    padding: 14px 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s ease;
+    font-family: inherit;
+  }
+  .pick:hover { border-color: var(--pink); transform: translateY(-2px); box-shadow: 0 8px 18px rgba(255,93,143,.25); }
+  .pick.sel { background: var(--pink); color: #fff; border-color: var(--pink); }
+  .emoji { font-size: 54px; margin-bottom: 8px; }
+  .back { background: none; border: none; color: #b08; cursor: pointer; margin-top: 18px; font-size: 14px; text-decoration: underline; opacity:.7; }
+  .hidden { display: none; }
+  .floaty { position: absolute; font-size: 26px; opacity: .5; animation: rise linear infinite; z-index: 1; }
+  @keyframes rise {
+    from { transform: translateY(110vh) rotate(0deg); }
+    to   { transform: translateY(-15vh) rotate(360deg); }
+  }
+  .confetti { position: fixed; width: 10px; height: 14px; top: -20px; z-index: 5; will-change: transform; }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <!-- STEP 1 -->
+    <section id="step1">
+      <div class="emoji">📞</div>
+      <h1>Are you going to call me?</h1>
+      <p class="sub" id="s1sub">Choose wisely... (there's only one right answer 😌)</p>
+      <div class="row">
+        <button class="btn yes" id="yesBtn">Yes 🥰</button>
+        <button class="btn no" id="noBtn">No</button>
+      </div>
+    </section>
+
+    <!-- STEP 2: pick a day -->
+    <section id="step2" class="hidden">
+      <div class="emoji">📅</div>
+      <h1>Yay! When can I hear your voice?</h1>
+      <p class="sub">Pick a day (next 4 days only — I can't wait longer 🙈)</p>
+      <div class="grid" id="dayGrid"></div>
+      <button class="back" data-go="1">← oops, wrong button</button>
+    </section>
+
+    <!-- STEP 3: pick a slot -->
+    <section id="step3" class="hidden">
+      <div class="emoji">⏰</div>
+      <h1>Pick a time slot</h1>
+      <p class="sub" id="s3sub">1-hour slots. Block it like it's important (it is).</p>
+      <div class="grid" id="slotGrid"></div>
+      <button class="back" data-go="2">← pick a different day</button>
+    </section>
+
+    <!-- STEP 4: done -->
+    <section id="step4" class="hidden">
+      <div class="emoji">💖</div>
+      <h1>All sorted!</h1>
+      <p class="sub" id="doneMsg"></p>
+      <button class="btn yes" id="restart">Book another call 😄</button>
+    </section>
+  </div>
+
+<script>
+  // ---- floating background hearts ----
+  const hearts = ["💗","💕","📞","🥰","✨","💌","💞"];
+  for (let i = 0; i < 14; i++) {
+    const f = document.createElement("div");
+    f.className = "floaty";
+    f.textContent = hearts[i % hearts.length];
+    f.style.left = Math.random() * 100 + "vw";
+    f.style.animationDuration = (7 + Math.random() * 8) + "s";
+    f.style.animationDelay = (-Math.random() * 10) + "s";
+    f.style.fontSize = (18 + Math.random() * 26) + "px";
+    document.body.appendChild(f);
+  }
+
+  // ---- step navigation ----
+  const steps = { 1:step1, 2:step2, 3:step3, 4:step4 };
+  function show(n){ Object.values(steps).forEach(s=>s.classList.add("hidden")); steps[n].classList.remove("hidden"); }
+  document.querySelectorAll(".back").forEach(b=> b.onclick = ()=> show(+b.dataset.go));
+
+  // ---- STEP 1: the "No" button that refuses to be clicked ----
+  const noBtn = document.getElementById("noBtn");
+  const yesBtn = document.getElementById("yesBtn");
+  const s1sub = document.getElementById("s1sub");
+  const noLines = [
+    "Nice try 😏",
+    "Catch me first!",
+    "Nope, not today",
+    "Wrong answer 😤",
+    "I'm too fast 💨",
+    "Are you sure? No.",
+    "Try the other one 👉",
+    "lol no",
+    "Not happening 😋"
+  ];
+  let yesScale = 1;
+  function dodge(){
+    const card = noBtn.closest(".card").getBoundingClientRect();
+    const maxX = card.width - noBtn.offsetWidth - 24;
+    const maxY = window.innerHeight - noBtn.offsetHeight - 24;
+    noBtn.style.position = "fixed";
+    noBtn.style.left = Math.max(12, Math.random() * maxX) + "px";
+    noBtn.style.top  = Math.max(12, Math.random() * (maxY)) + "px";
+    noBtn.textContent = noLines[Math.floor(Math.random()*noLines.length)];
+    // make Yes more tempting every dodge
+    yesScale = Math.min(yesScale + 0.12, 2.2);
+    yesBtn.style.transform = "scale(" + yesScale + ")";
+    s1sub.textContent = "See? The universe wants you to say yes 💫";
+  }
+  noBtn.addEventListener("mouseover", dodge);
+  noBtn.addEventListener("click", (e)=>{ e.preventDefault(); dodge(); });
+  noBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); dodge(); }, {passive:false});
+
+  yesBtn.onclick = ()=>{ burst(); buildDays(); show(2); };
+
+  // ---- STEP 2: next 4 days ----
+  let chosenDay = null, chosenSlot = null;
+  const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const monNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function buildDays(){
+    const g = document.getElementById("dayGrid");
+    g.innerHTML = "";
+    const labels = ["Today","Tomorrow"];
+    for (let i = 0; i < 4; i++){
+      const d = new Date(); d.setDate(d.getDate() + i);
+      const label = labels[i] || (dayNames[d.getDay()]);
+      const btn = document.createElement("button");
+      btn.className = "pick";
+      btn.innerHTML = "<strong>"+label+"</strong><br>"+d.getDate()+" "+monNames[d.getMonth()];
+      btn.onclick = ()=>{
+        chosenDay = { label, dateStr: d.getDate()+" "+monNames[d.getMonth()] };
+        buildSlots();
+        show(3);
+      };
+      g.appendChild(btn);
+    }
+  }
+
+  // ---- STEP 3: 1-hour slots ----
+  function buildSlots(){
+    const g = document.getElementById("slotGrid");
+    g.innerHTML = "";
+    const hours = [9,10,11,12,15,16,18,20,21,22]; // friendly 1hr slots
+    function fmt(h){ const ap = h>=12?"PM":"AM"; let hh = h%12; if(hh===0) hh=12; return hh+" "+ap; }
+    hours.forEach(h=>{
+      const btn = document.createElement("button");
+      btn.className = "pick";
+      btn.textContent = fmt(h) + " – " + fmt(h+1);
+      btn.onclick = ()=>{
+        chosenSlot = btn.textContent;
+        finish();
+        show(4);
+      };
+      g.appendChild(btn);
+    });
+  }
+
+  // ---- STEP 4: confirmation ----
+  function finish(){
+    burst();
+    document.getElementById("doneMsg").innerHTML =
+      "Thanks for your time and patience 💕<br><br>" +
+      "Your call with <strong>Karun</strong> on <strong>" + chosenDay.label +
+      " (" + chosenDay.dateStr + ")</strong> at <strong>" + chosenSlot +
+      "</strong> has been sorted now. 📞✨<br><br>" +
+      "<em>He's already smiling, just so you know.</em>";
+  }
+  document.getElementById("restart").onclick = ()=>{ yesScale=1; yesBtn.style.transform=""; noBtn.style.position=""; noBtn.textContent="No"; show(1); };
+
+  // ---- confetti burst ----
+  function burst(){
+    const colors = ["#ff5d8f","#7b2ff7","#ffd166","#06d6a0","#ff8fab"];
+    for (let i=0;i<60;i++){
+      const c = document.createElement("div");
+      c.className = "confetti";
+      c.style.left = Math.random()*100 + "vw";
+      c.style.background = colors[i%colors.length];
+      c.style.borderRadius = Math.random()>.5 ? "50%" : "2px";
+      document.body.appendChild(c);
+      const fall = 700 + Math.random()*900;
+      const drift = (Math.random()-.5)*300;
+      c.animate([
+        { transform:"translate(0,0) rotate(0deg)", opacity:1 },
+        { transform:"translate("+drift+"px,"+(window.innerHeight+60)+"px) rotate("+(Math.random()*720)+"deg)", opacity:1 }
+      ], { duration: fall, easing:"cubic-bezier(.2,.6,.4,1)" }).onfinish = ()=> c.remove();
+    }
+  }
+</script>
+</body>
+</html>
