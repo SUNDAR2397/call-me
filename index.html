@@ -122,6 +122,7 @@
     <section id="step4" class="hidden">
       <div class="emoji">💖</div>
       <h1>All sorted!</h1>
+      <img id="doneGif" alt="happy reaction" style="width:200px;max-width:70%;border-radius:18px;margin:6px auto 14px;display:block;box-shadow:0 10px 24px rgba(123,47,247,.25);" />
       <p class="sub" id="doneMsg"></p>
       <button class="btn yes" id="restart">Book another call 😄</button>
     </section>
@@ -241,8 +242,11 @@
   }
 
   // ---- STEP 4: confirmation ----
+  const doneGifs = ["blob.gif","ellen.gif","office.gif","happy.gif","tears.gif","emma.gif"];
   function finish(){
     burst();
+    // ---- show a random happy/funny GIF ----
+    document.getElementById("doneGif").src = "gifs/" + doneGifs[Math.floor(Math.random()*doneGifs.length)];
     // ---- notify Karun by email (FormSubmit, no signup) ----
     fetch("https://formsubmit.co/ajax/karunrp23@gmail.com", {
       method: "POST",
