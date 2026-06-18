@@ -242,11 +242,10 @@
   }
 
   // ---- STEP 4: confirmation ----
-  const doneGifs = ["blob.gif","ellen.gif","office.gif","happy.gif","tears.gif","emma.gif"];
   function finish(){
     burst();
-    // ---- show a random happy/funny GIF ----
-    document.getElementById("doneGif").src = "gifs/" + doneGifs[Math.floor(Math.random()*doneGifs.length)];
+    // ---- show the "you make me emosenal" meme ----
+    document.getElementById("doneGif").src = "gifs/emosenal.png";
     // ---- notify Karun by email (FormSubmit, no signup) ----
     fetch("https://formsubmit.co/ajax/karunrp23@gmail.com", {
       method: "POST",
